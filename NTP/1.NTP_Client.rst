@@ -1,0 +1,124 @@
+Configure Client Server
+=======================
+
+=======================
+Pre-requisites:
+=======================
+
+1.	Make sure **w32tm** is installed *(Needs to be Either Windows Pro or Windows Server)*
+
+2.	Make sure **Windows Time** is set to running **automatic** in the services.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/1.WindowsTimeService.jpg
+
+3.	If it is **w32tm** is not showing or **Windows Time** is missing from services then open **Command Prompt as Administrator** and type the following:
+
+.. code-block:: console
+
+  net stop w32time
+  w32tm /unregister
+  w32tm /register &:: (#comment: This is the main code)
+  net start w32time
+  w32tm /resync /nowait
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/2.EnableWindowsTime.jpg
+
+=======================
+Steps:
+=======================
+
+1.	Open Group Policy Editor by:
+
+**Searching in the Windows**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/1.1.OpenGPEdit.jpg
+
+OR 
+
+**Windows+R > Run > gpedit.msc**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/1.2.OpenGPEdit.jpg
+
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/1.WindowsTimeService.jpg
+
+
+2.	Go to **Computer Configuration > Administrative Templates > System > Windows Time Service > Time Providers**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/2.GotoTimeProviders.jpg
+
+
+3.	Enable the policy **Configure Windows NTP Client** with **NtpServer** and **Type** as NTP
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/3.ConfigureWindowsNTPClient.jpg
+
+*Choose the correct NTP Server IP or URL based on your location. I am using the IP of Nepal which is 202.70.64.22 or ntp.ntc.net.np as mentioned in https://db-ip.com/202.70.64.22*
+
+4.	Enable the policy **Enable Window NTP Client**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/4.EnableWindowNTPClient.jpg
+
+
+5.  Open command prompt as administrator and **Update Group Policy**
+
+.. code-block:: console
+
+    gpupdate /force 
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/6.UpdateGroupPolicy.jpg
+
+
+
+6.	Open command prompt as administrator and Sync to NtpServer
+
+
+.. code-block:: console
+
+    w32tm /resync
+
+
+.. code-block:: console
+
+    w32tm /resync /nowait &:: (#comment: If sync doesn't work then force resync)
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/5.ResyncForce.jpg
+
+
+
+
+7.	Verify the peers 
+
+.. code-block:: console
+
+    W32tm /query /peers 
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/7.QueryPeers.JPG
+
+8.	Verify the Source 
+
+.. code-block:: console
+
+    W32tm /query /source
+
+
+9. If the source is **Local CMOS Clock**, Run the following code:
+
+.. code-block:: console
+
+    w32tm /config /manualpeerlist:202.70.64.22 /syncfromflags:manual /reliable:yes /update
+
+
+.. code-block:: console
+
+    w32tm /config /syncfromflags:domhier /update
+
+
+.. code-block:: console
+
+    net stop w32time && net start w32time
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/8.FixUsingCMOSClock.JPG
+
+10. If the source shows the NTP IP or URL then you are good to go. 
+        
+😉😉🚀🚀
