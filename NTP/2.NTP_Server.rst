@@ -84,7 +84,7 @@ OR
     gpudate /force
 
 
-9. Follow the steps in `1.NTP_Client <https://github.com/mkshgh/ServerTips4Admins/blob/main/NTP/2.NTP_ClieInternet.rst>`_ to configure your client computer
+9. Follow the steps in `1.NTP_Client <https://github.com/mkshgh/ServerTips4Admins/blob/main/NTP/1.NTP_Client.rst>`_ to configure your client computer
 
 10. And then the People realized the truth about `Musk's Products <https://www.youtube.com/watch?v=2vuMzGhc1cg>`_ Like Elizabeth Holmes 
 
