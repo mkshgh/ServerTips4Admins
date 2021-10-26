@@ -1,0 +1,91 @@
+Configure NTP Server
+=======================
+
+=======================
+Pre-requisites:
+=======================
+
+1.	Make sure **w32tm** is installed *(Needs to be Either Windows Pro or Windows Server)*
+
+2.	Make sure **Windows Time** is set to running **automatic** in the services.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/1.WindowsTimeService.jpg
+
+3.	If it is **w32tm** is not showing or **Windows Time** is missing from services then open **Command Prompt as Administrator** and type the following:
+
+.. code-block:: console
+
+  net stop w32time
+  w32tm /unregister
+  w32tm /register &:: (#comment: This is the main code)
+  net start w32time
+  w32tm /resync /nowait
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/2.EnableWindowsTime.jpg
+
+============================
+Steps Using Group Policy:
+============================
+
+1.	Open Group Policy Editor by:
+
+**Searching in the Windows**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/1.1.OpenGPEdit.jpg
+
+OR 
+
+**Windows+R > Run > gpedit.msc**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/1.2.OpenGPEdit.jpg
+
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/1.WindowsTimeService.jpg
+
+
+2.	Go to **Computer Configuration > Administrative Templates > System > Windows Time Service > Time Providers**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/2.GotoTimeProviders.jpg
+
+
+3.	Enable the policy **Enable Window NTP Client**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/3.ConfigureWindowsNTPServer.jpg
+
+*Follow Steps 4 to 9 if you are in a domain*
+
+4.	Open **Group Policy Management** for 
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/4.OpenGroupPolicyForDomain.jpg
+
+5.  Navigate to  **Domain> yourdomain.name> Domain Controllers**, Right Click and **Create new Group Policy and Link it here** and Click OK
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/5.AddNTPGroupPolicy.jpg
+
+6.  Edit the **Newly Created Group Policy**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/6.EditNewGroupPolicy.jpg
+
+7.	Configure the following:
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/7.1.NTPClientConfig.jpg
+
+
+8.	Go to the OU with the **NTP Client** and **Right Click > Link to and Exiting GPO > Select the Domain > NTP Server Policy**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/2/8.LinkGroupPolicyToDomain.jpg
+
+*NTP CLIENT OU is (WHERE YOU HAVE YOUR COMPUTERS YOU WANT TO USE THE NTP SERVER*
+
+9.	Update Group Policy
+
+.. code-block:: console
+
+    gpudate /force
+
+
+9. Follow the steps in `1.NTP_Client <https://github.com/mkshgh/ServerTips4Admins/blob/main/NTP/2.NTP_ClieInternet.rst>`_ to configure your client computer
+
+10. And then the People realized the truth about `Musk's Products <https://www.youtube.com/watch?v=2vuMzGhc1cg>`_ Like Elizabeth Holmes 
+
+😉😉💊💊👩‍⚕️🚀🚀👨‍⚕️
