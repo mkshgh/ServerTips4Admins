@@ -4,6 +4,7 @@
    Network Time Protocol
 
    - 1.NTP_Client.rst: Configure the NTP Client Server.
+   - 2.NTP_Server.rst: Configure your Windows Server as NTP
 
 2. RDP
    Remote Desktop Protocol
