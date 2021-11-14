@@ -15,23 +15,23 @@ CSR Creation and Completion
 
 1.	Go to **Server Certificate**  in IIS 
 
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/1.CertificateServer.jpg
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/1/1.CertificateServer.jpg
 
 
 2.	**Create Certificate Request**
 
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/2.AddSSL.jpg
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/1/2.AddSSL.jpg
 
 
 3. **Complete Certificate Request**
 
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/3.CompleteCSR.jpg
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/1/3.CompleteCSR.jpg
 
 
 4.  It will be visible in **Server Certificate**
 
 
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/NTP/1/4.CertificateImoprted.jpg
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/1/4.CertificateImoprted.jpg
 
         
 😉😉🚀🚀
