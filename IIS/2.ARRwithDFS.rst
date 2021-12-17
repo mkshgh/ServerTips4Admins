@@ -1,0 +1,455 @@
+ARR with DFS
+============
+
+This document is created for systematic and hierarchical flow of
+creating the creating a highly available, scalable and Auto-Sync
+Networking architecture with ARR (Application Request Routing) and DFS
+(Distributed file System) implemented in windows server. The main reason
+to implement this is to give zero downtime during the
+maintenance/updating of the codebase and routing the request to the
+multiple server nodes thus reducing the load to a single server. Using
+the DFS with ARR ensures that the dynamic files of the application
+servers are always in sync. A general idea about the configuration is
+shown below:
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/ARRwithDFS.jpg
+   :width: 6.5in
+   :height: 4.85625in
+
+`1 ARR with DFS <#arr-with-dfs>`__
+
+`2 Terminologies <#terminologies>`__
+
+`2.1 Application Request Routing (ARR) Server
+Configuration <#server-configuration-background>`__
+
+`2.2 Pre-requisites <#pre-requisites>`__
+
+`3 ARR Setup <#arr-setup>`__
+
+`3.1 Setting up the node servers: <#setting-up-the-node-servers>`__
+
+`3.2 Configuring the ARR Server <#configuring-the-arr-server>`__
+
+`3.2.1 Install ARR in Web Platform Installer for
+IIS <#install-arr-in-web-platform-installer-for-iis>`__
+
+`3.2.2 Adding Server Farm <#adding-server-farm>`__
+
+`3.2.3 URL Rewrite Rule <#url-rewrite-rule>`__
+
+`3.2.4 Monitoring the server Farm <#monitoring-the-server-farm>`__
+
+`3.2.5 Handling HTTPS Requests <#handling-https-requests>`__
+
+`4 DFS for content sharing <#dfs-for-content-sharing>`__
+
+Terminologies
+=============
+
+-  **Node** is used to define the server where the application is hosted
+
+-  **ARR** is the server which routes the requests to the nodes.
+
+Server Configuration Background
+===============================
+
+Here a System is created with the following configuration.
+
+**# SRV01 which has application hosted on port 8001**
+
+-  192.168.10.42 apigreen.iis
+
+**# SRV02 which has application hosted on port 8002**
+
+-  192.168.10.43 apiblue.iis
+
+**# ARR Server for handling the server requests and routes it to the
+above two servers based on the availability.**
+
+-  192.168.10.42 api.iis
+
+Pre-requisites
+==============
+
+1. Make sure you have **Web Server (IIS)** installed in all the servers
+   with the following modules:
+
+-  Web Server
+
+..
+
+   Common FTP Features
+
+-  Default Document
+
+-  Directory Browsing
+
+-  HTTP Errors
+
+-  Static Content
+
+-  HTTP Redirection
+
+..
+
+   Health and diagnostics
+
+-  HTTP Logging
+
+-  Logging Tools
+
+-  Request Monitor
+
+-  Tracing
+
+..
+
+   Performance
+
+-  Static Content
+
+..
+
+   Security
+
+-  Request Filtering
+
+-  Basic Authentication
+
+-  Client Certificate Mapping Authentication
+
+-  IIS Client Certificate Mapping Authentication
+
+-  IP and Domain Restrictions
+
+-  Windows Authentication
+
+..
+
+   Application Development
+
+-  .NET Extensibility 4.5
+
+-  ASP
+
+-  ASP .NET 4.5
+
+-  ISAPI Extensions
+
+-  ISAPI Filters
+
+-  FTP Server
+
+..
+
+   FTP Service
+
+-  Management Tools
+
+..
+
+   IIS Management Console
+
+   IIS 6 Management Compatibility
+
+-  IIS 6 Metabase Compatibility
+
+-  IIS 6 Management Console
+
+-  IIS 6 Scripting Tools
+
+-  IIS 6 WMI Compatibility
+
+..
+
+   IIS Management Scripts and Tools
+
+2. The system is updated to the latest version.
+
+3. The **ARR** server can access the server **nodes**.
+
+ARR Setup
+=========
+
+Setting up the node servers:
+----------------------------
+
+1. Go to the node server and add the application with the following
+   configuration.
+
+..
+
+   Here:
+
+   **Site name**: name of your **first node**
+
+   **Physical Path**: where app is hosted
+
+   **Hostname**: how to access this node.
+
+   **Port**: 80 (this is added for accessing it internally)
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/3.1AddSrvBlueWebsite.jpg
+   :width: 6.5in
+   :height: 3.96279in
+
+2. Add **up.txt** with text **up** written to it. It should be in the
+   public directory and be reachable by the normal user. This is used
+   for installing to check if the server is up or down. If it is not
+   reachable, this means the server is down and switches the server.
+   This is where all the magic of ARR happens. For us: it is in
+   **http://apiblue.iis/up.txt**
+   
+ .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/up.jpg
+
+3. Add another port with empty host name (you could use the hostname
+   here too, but we had some issues in the **arr** doing this.) so a
+   custom port assigned without hostname.
+
+..
+
+   **Port**: 8002 (This can be any port which is not used in the
+   server). I chose this port so whenever I increase the server nodes. I
+   increase the port by 1, so the new server node would be 8003, 8004
+   and so on.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/3.2AddSrvBlueWebsitePort.jpg
+   :width: 6.5in
+   :height: 3.65625in
+
+4. So, the final configuration will look like this.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/3.3SrvBlueConfirmation.jpg
+   :width: 6.5in
+   :height: 2.87226in
+
+5. Add the hostname to the **host file**.
+
+..
+
+   # Host file location: C:\Windows\System32\drivers\etc\hosts
+
+   192.168.10.43 apiblue.iis
+
+6. Go to another server and repeat the same configuration as mentioned above with the following parameters.
+
+..
+
+   .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/3.4SrvBlueConfirmation.jpg
+      :width: 6.5in
+      :height: 3.75823in
+
+   # Host file location: C:\Windows\System32\drivers\etc\hosts
+
+   192.168.10.42 apigreen.iis
+
+   *\*\* Note: But make sure that the ports are not the same. As I
+   mentioned that hosting on the same port gave error during the
+   configuration.*
+
+7. As you need more servers. You keep on adding the server **nodes**.
+
+Configuring the ARR Server
+--------------------------
+
+Install ARR in Web Platform Installer for IIS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Go to the
+   `link <https://www.microsoft.com/web/downloads/platform.aspx>`__ (or google/duckduckgo it). Then **Download and Install** the web platform installer.
+
+2. You should see the following component added to IIS. If it is not
+   visible then close and reopen IIS.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/4.1InstallWebPlatfromInstaller.JPG
+   :width: 6.5in
+   :height: 3.40162in
+
+3. Click on it and search for **ARR** and click enter. Then **add** and
+   **install** it.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/4.2InstallARRInWebPlatfromInstaller.jpg
+   :width: 6.5in
+   :height: 3.08214in
+
+Adding Server Farm
+~~~~~~~~~~~~~~~~~~
+
+1. Once you install ARR in the **server farm** will be visible in the
+   IIS. If it is not visible then close and reopen IIS.
+
+..
+
+   .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.ServerFarm.jpg
+      :width: 1.625in
+      :height: 0.93333in
+
+2. Right click on **Server Farm** > **Create Server Farm** and give it a
+   name (Keeping the name same as the request host is a good choice, as
+   it we can find it easily. It can be anything)
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.1CreateServerFarm.jpg
+   :width: 6.5in
+   :height: 3.95004in
+
+3. Add the **server nodes** to the server. Click on **advanced
+   settings** to add your **ports** of the nodes.
+
+..
+
+   .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.2AddServerstoFarm.jpg
+      :width: 6.5in
+      :height: 2.57508in
+
+4. Then it will be visible in the server Farm
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.3APIServerFarm.jpg
+   :width: 2.03056in
+   :height: 3.32569in
+
+5. Add the node IP and hostnames to the **host files**.
+
+..
+
+   # ARR Server
+
+   # C:\Windows\System32\drivers\etc\hosts
+
+   # Add these according the hostnames and IP that you gave to your
+   server.
+
+   192.168.10.42 apigreen.iis
+
+   192.168.10.43 apiblue.iis
+
+   192.168.10.41 api.iis
+
+6. Go to **api.iis> Health Test**
+
+..
+
+   .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.3MonitoringHearBeat.jpg
+      :width: 6.5in
+      :height: 2.16833in
+
+7. And add the following and click apply:
+
+   -  **URL**:  http://{serverfarmhostname}/{locationofyourup.txt}
+
+   -  **Response match**: up (as we kept up in the files before)
+
+   -  **Verify URL TEST**: Result and Details should be **Pass** shown at the bottom
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.4CheckServerOnlineStatusjpg.jpg
+   :width: 6.5in
+   :height: 4.10078in
+
+URL Rewrite Rule
+~~~~~~~~~~~~~~~~
+
+1. Go to your **server** and click on **URL Rewrite**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/6.1URLRewrite.jpg
+   :width: 6.5in
+   :height: 3.65625in
+
+2. Click on **Add Rules** Add a **Blank Rule**
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/6.1URLRewriteBlankRule.jpg
+   :width: 6.5in
+   :height: 2.63132in
+
+3. Add the rule with following parameters:
+
+   -  **Name**: Generally, whatever your request URL hostname is best
+      choice
+
+   -  **Pattern**: .\* (This matches everything)
+
+   -  **{HOST_HTTP}**: ^api.iis$ (Matches that the URL starts and ends
+      with api.iis)
+
+   -  **{SERVER_PORT}**: ^80$ (Matches request coming to port 80 only)
+
+   -  **Action Type**: Route to Server Farm
+
+   -  **Server Farm**: api.iis (the one we created above)
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/6.1URLRewriteRuleParamters.jpg
+   :width: 6.5in
+   :height: 9.49235in
+
+Monitoring the server Farm
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Go to https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/7.2MonitoringAfterBrowsing.jpg
+
+.. image:: media/image17.jpeg
+   :width: 6.5in
+   :height: 1.45795in
+
+2. Right now, there are no requests
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/7.2CheckingRequestCountBefore.jpg
+   :width: 6.5in
+   :height: 1.41345in
+
+3. Go browse the URL some times. You can see that the Server is
+   switching between the two nodes.
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/7.1Browsing.jpg
+   :width: 6.5in
+   :height: 3.58556in
+
+4. If you have same websites hosted, then it is hard to monitor if the
+   request is actually switching or not. For this go to **Monitoring and
+   Management** again. You can see that both the servers are Receiving
+   the requests.
+
+..
+
+   .. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/7.3CheckingRequestsCount.jpg
+      :width: 6.5in
+      :height: 3.48698in
+
+Handling HTTPS Requests
+~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Go to the **Default website**>\ **Bindings** and Add to the bindings
+   and add the following:
+
+**Type:** Https
+
+**Port:** 443
+
+**SSL Certificate:** Which ever you have installed
+
+*\*\* If you stop the default site. Then it will stop working. So if you are going to use https don't stop the default site.*
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/8.AddingHTTPSToARR.jpg
+   :width: 6.5in
+   :height: 5.59814in
+
+2. Edit the Rewrite Rule with the following:
+
+**{SERVER_PORT}:** 443
+
+**{HTTPS}:** on
+
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/8.AddingHTTPSURLRewrite.jpg
+   :width: 6.5in
+   :height: 2.81575in
+
+DFS for content sharing
+=======================
+
+Some of the resources in the application might be dynamic and need to be
+updated between the nodes. In this scenario, the server’s folders are
+kept in the DFS replication and all the nodes are kept in sync. So,
+whenever a file is added or removed in one node, it will be reflected in
+rest of the nodes. For this, the servers need to be in the same Active
+Directory if implemented in windows server.
+
+We followed the steps in this document >>add the link here for now<< for
+this.
