@@ -253,23 +253,18 @@ Setting up the node servers:
 Configuring the ARR Server
 --------------------------
 
-Install ARR in Web Platform Installer for IIS
+Install URL Rewrite and ARR 3.0 for IIS (Web Platform Installer is Deprecated Now)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Go to the
-   `link <https://www.microsoft.com/web/downloads/platform.aspx>`__ (or google/duckduckgo it). Then **Download and Install** the web platform installer.
+1. Go to the `link <https://www.iis.net/downloads/microsoft/url-rewrite>`__ (or google/duckduckgo it). Then **Download and Install** URLRewrite . **URL Rewrite** will be visible in the IIS.
 
-2. You should see the following component added to IIS. If it is not
-   visible then close and reopen IIS.
-
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/4.1InstallWebPlatfromInstaller.JPG
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/6.1URLRewrite.jpg
    :width: 6.5in
    :height: 3.40162in
 
-3. Click on it and search for **ARR** and click enter. Then **add** and
-   **install** it.
+3.Go to the `link <https://www.iis.net/downloads/microsoft/application-request-routing>`__ (or google/duckduckgo it). Then **Download and Install** ARR 3.0 . **server farm** will be visible in the IIS.
 
-.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/4.2InstallARRInWebPlatfromInstaller.jpg
+.. image:: https://github.com/mkshgh/ServerTips4Admins/blob/main/Images/IIS/2/5.ServerFarm.jpg
    :width: 6.5in
    :height: 3.08214in
 
